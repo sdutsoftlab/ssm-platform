@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tommy.dao.UserDao">
+    
+    <select id="queryUser" parameterType="map" resultType="int">
+        select
+               count(1)
+        from
+             t_student_information
+        where
+              username = #{username} and password = #{password}
+    </select>
+
+    <select id="queryUserbyUsername" parameterType="string" resultType="int" >
+        select
+               count(1)
+        from
+             t_student_information
+        where
+              username = #{username}
+    </select>
+
+    <insert id="addUserToTable" parameterType="map" keyProperty="id">
+        insert into
+            t_student_information(st_name, st_mark, st_mobile, username, password, identity, st_number)
+        values
+            (#{st_name}, #{st_mark}, #{st_mobile}, #{username}, #{password}, "editor", #{st_number})
+    </insert>
+
+    <update id="updateUser" parameterType="map" >
+        update
+            t_student_information
+        set
+            st_name = #{st_name}, st_mark = #{st_mark}, st_mobile = #{st_mobile}
+        where
+              username = #{username}
+    </update>
+
+    <update id="changePassword" parameterType="map">
+        update t_student_information set password = #{password} where username = #{username}
+    </update>
+
+    <select id="getIdentity" parameterType="string" resultType="string" >
+        select identity from t_student_information where username = #{username}
+    </select>
+
+    <insert id="addUser" parameterType="map" >
+        insert into
+            t_student_information(username, password, st_name, st_mobile, st_mark, identity)
+        values(#{username}, #{password}, #{st_name}, #{st_mobile}, #{st_mark}, "editor")
+    </insert>
+
+    <select id="showTeacher" resultType="teacher" >
+        select id, st_mobile, st_name, username from t_student_information where identity = "teacher"
+    </select>
+
+    <update id="insertTeacherId" parameterType="map" >
+        update t_student_information set teacher_id = #{teacher_id} where username = #{username}
+    </update>
+
+    <select id="selectStudentIdByUsername" resultType="int" parameterType="string" >
+        select id from t_student_information where username = #{username}
+    </select>
+
+    <select id="selectAllCitiesUniversity" resultType="university" parameterType="string" >
+        select * from t_university where ${condition}
+    </select>
+
+    <select id="selectCitiesUniversity" parameterType="string" resultType="university" >
+        select
+               *
+        from
+             t_university
+        where
+              Position in ${condition}
+        order by
+                 school_code
+    </select>
+
+    <select id="selectUniversityByFuzzyName" parameterType="string" resultType="university" >
+        select * from t_university where Name like ${Name}
+    </select>
+
+    <select id="selectMajorByType" resultType="major" parameterType="string" >
+        select * from t_major_show where name in ${condition}
+    </select>
+
+    <select id="selectTypeDetails" parameterType="string" resultType="string" >
+        select name from t_major_show where type_detail in ${condition}
+    </select>
+
+    <select id="getMajorByFuzzySelect" resultType="major" parameterType="string" >
+        select * from t_major_show where name like ${condition}
+    </select>
+
+    <select id="getMajorJustLimitLevel" resultType="major" parameterType="string" >
+        select * from t_major_show where level1_name in ${level}
+    </select>
+
+    <select id="getMajorByNeeds" parameterType="string" resultType="major" >
+        select * from t_major_show where type_detail in ${sqlstring}
+    </select>
+
+    <select id="getStudentIdByUsername" resultType="int" parameterType="string" >
+        select id from t_student_information where username = #{username}
+    </select>
+
+    <insert id="insertIntoStudentUniversity" >
+        insert into t_student_university(student_id, university_id) values(#{student_id}, #{university_id})
+    </insert>
+
+    <select id="quaryUniversityIfExist" resultType="int" >
+        select count(0) from t_student_university where student_id = #{student_id} and university_id = #{university_id}
+    </select>
+
+    <select id="getUniversityIdByStudentId" resultType="int" parameterType="int" >
+        select university_id from t_student_university where student_id = #{student_id}
+    </select>
+
+    <select id="getUniversityByUniversityList" parameterType="string" resultType="university" >
+        select * from t_university where school_id in ${SQLString}
+    </select>
+
+    <delete id="deleteUniversityIdByStudentId" >
+        delete from t_student_university where student_id = #{student_id} and university_id = #{university_id}
+    </delete>
+
+    <select id="getUniversityNums" resultType="int" parameterType="int" >
+        select count(0) from t_student_university where student_id = #{student_id}
+    </select>
+
+    <select id="getMajorByUniversitySelected" parameterType="string" resultType="t_major" >
+        (select * from t_major where ${SQLString}) order by LowLevel      <!-- debug -->
+    </select>
+
+    <select id="getMajorWithoutUniversity" parameterType="string" resultType="t_major" >
+        (select * from t_major where ${SQLString}) order by LowLevel    <!-- debug -->
+    </select>
+
+    <insert id="insertIntoStudentMajor" >
+        insert into t_major_student(major_id, student_id) values(#{major_id}, #{student_id})
+    </insert>
+
+    <select id="getMajorId" resultType="int" parameterType="int" >
+        select major_id from t_major_student where student_id = #{student_id}
+    </select>
+
+    <select id="getMajorByMajorId" parameterType="string" resultType="t_major" >
+        select * from t_major where major_id in ${SQLString}
+    </select>
+
+    <select id="quaryMajorIfExist" resultType="int">
+        select count(0) from t_major_student where major_id = #{major_id} and student_id = #{student_id}
+    </select>
+
+    <select id="deleteMajorByStudent" >
+        delete from t_major_student where major_id = #{major_id} and student_id = #{student_id}
+    </select>
+
+    <select id="getUserInformation" resultType="userInformationShow" parameterType="int" >
+        select * from t_student_information where id = #{student_id}
+    </select>
+
+    <select id="countStudentUniversity" parameterType="int" resultType="int" >
+        select count(0) from t_student_university where student_id = #{student_id}
+    </select>
+
+    <select id="getScoreLevel" resultType="int" parameterType="int" >
+        select * from t_score_level where score = #{score}
+    </select>
+
+    <select id="getAutoMajor" parameterType="string" resultType="t_major" >
+        (select * from t_major where ${SQLString} limit 192) order by LowLevel
+    </select>
+
+    <select id="insertAutoMajorToDatabase" parameterType="string" >
+        replace into t_auto_major(student_id, major_id) values${SQLString}
+    </select>
+
+    <delete id="deleteAutoMajor" >
+        delete from t_auto_major where major_id = #{major_id} and student_id = #{student_id}
+    </delete>
+
+    <select id="getAutoMajorId" resultType="int" parameterType="int" >
+        select major_id from t_auto_major where student_id = #{student_id}
+    </select>
+
+    <update id="saveSelectedMajorOrder" parameterType="string" >
+        update t_major_student set major_id = CASE major_id ${SQLString}
+    </update>
+
+    <update id="saveAutoMajorOrder" parameterType="string" >
+        update t_auto_major set major_id = CASE major_id ${SQLString}
+    </update>
+
+
+
+</mapper>
